@@ -4,7 +4,9 @@ import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 public class BaseballElimination {
     private HashMap<String, int[]> division;
@@ -14,6 +16,7 @@ public class BaseballElimination {
     private final int GAMES_LEFT = 3;
     String[] teams;
     private int NUM_OF_TEAMS;
+    private int numOfMatchups;
 
 
     // create a baseball division from given filename in format specified below
@@ -72,19 +75,27 @@ public class BaseballElimination {
 
     // is given team eliminated?
     public boolean isEliminated(String team) {
+        FlowNetwork network = getFlowNetwork(team);
+        Iterable<FlowEdge> arr = network.adj(0);
+        Iterator<FlowEdge> iter = arr.iterator();
+        while (iter.hasNext()) {
+            FlowEdge next = iter.next();
+            if (next.flow() != next.capacity()) return true;
+        }
         return false;
     }
 
     private FlowNetwork getFlowNetwork(String qteam) {
         // # of vertices in your FlowNetwork is the numberOfMatchups + numberofTeams + 2
         int game = 1;
-        int numOfMatchups = getNumofMatchups(qteam);
+        numOfMatchups = getNumofMatchups(qteam);
         int[] qarr = division.get(qteam);
         int vertices = qarr[GAMES_LEFT] + NUM_OF_TEAMS + 2;
         FlowNetwork flowNetwork = new FlowNetwork(vertices);
+
         // calculate the maximum wins possible for the team passed to this method
         int maxwins = qarr[WINS_POSITION] + qarr[GAMES_LEFT];
-        int start = 0; // start num is unique, separate from teamnumbers
+        int start = 0;
 
         // iterate over all of the team combinations
         for (int x = 0; x < NUM_OF_TEAMS; x++) {
@@ -104,6 +115,9 @@ public class BaseballElimination {
 
                 game++;
             }
+            FlowEdge edgefin = new FlowEdge(numOfMatchups + 1 + division.get(team1)[TEAM_NUMBER_POSITION],
+                    vertices - 1, maxwins - division.get(team1)[WINS_POSITION]);
+            flowNetwork.addEdge(edgefin);
             // add an edge from team1 to the 'end' and give it the capacity of the wins that the
             // query team could afford  winning without overtaking our query team,
             // i.e. the query teams max possible wins minus team1's current wins
