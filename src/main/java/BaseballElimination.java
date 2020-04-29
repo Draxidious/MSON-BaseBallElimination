@@ -1,7 +1,4 @@
-import edu.princeton.cs.algs4.FlowEdge;
-import edu.princeton.cs.algs4.FlowNetwork;
-import edu.princeton.cs.algs4.In;
-import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.*;
 
 import java.io.File;
 import java.util.HashMap;
@@ -75,12 +72,8 @@ public class BaseballElimination {
     // is given team eliminated?
     public boolean isEliminated(String team) {
         FlowNetwork network = getFlowNetwork(team);
-        Iterable<FlowEdge> arr = network.adj(0);
-        Iterator<FlowEdge> iter = arr.iterator();
-        while (iter.hasNext()) {
-            FlowEdge next = iter.next();
-            if (next.flow() != next.capacity()) return true;
-        }
+        FordFulkerson ford = new FordFulkerson(network, 0, network.V() - 1);
+        if (ford.inCut(0)) return true;
         return false;
     }
 
