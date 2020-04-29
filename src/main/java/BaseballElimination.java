@@ -1,3 +1,4 @@
+import edu.princeton.cs.algs4.FlowEdge;
 import edu.princeton.cs.algs4.FlowNetwork;
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
@@ -11,6 +12,8 @@ public class BaseballElimination {
     private final int WINS_POSITION = 1;
     private final int LOSS_POSITION = 2;
     private final int GAMES_LEFT = 3;
+    String[] teams;
+    private int NUM_OF_TEAMS;
 
 
     // create a baseball division from given filename in format specified below
@@ -20,15 +23,19 @@ public class BaseballElimination {
         In file = new In(new File(filename));
         division = new HashMap<>();
         int numofteams = file.readInt();
+        NUM_OF_TEAMS = numofteams;
+        teams = new String[NUM_OF_TEAMS];
         file.readLine();
         for (int i = 0; i < numofteams; i++) {
             String[] next = file.readLine().split("\\s+");
-            String teamname = next[TEAM_NUMBER_POSITION];
-            int[] putarr = new int[numofteams + 3];
+            String teamname = next[0];
+            int[] putarr = new int[numofteams + 4];
+            putarr[TEAM_NUMBER_POSITION] = i;
             for (int x = WINS_POSITION; x < putarr.length; x++) {
                 putarr[x] = Integer.parseInt(next[x]);
             }
             division.put(teamname, putarr);
+            teams[i] = teamname;
         }
 
     }
@@ -68,30 +75,51 @@ public class BaseballElimination {
         return false;
     }
 
-    private FlowNetwork getFlowNetwork(String team) {
+    private FlowNetwork getFlowNetwork(String qteam) {
         // # of vertices in your FlowNetwork is the numberOfMatchups + numberofTeams + 2
-
-        // keeps track of the game number, starts at 1 because 0 is the start node
         int game = 1;
-
+        int numOfMatchups = getNumofMatchups(qteam);
+        int[] qarr = division.get(qteam);
+        int vertices = qarr[GAMES_LEFT] + NUM_OF_TEAMS + 2;
+        FlowNetwork flowNetwork = new FlowNetwork(vertices);
         // calculate the maximum wins possible for the team passed to this method
+        int maxwins = qarr[WINS_POSITION] + qarr[GAMES_LEFT];
+        int start = 0; // start num is unique, separate from teamnumbers
 
-        //iterate over all of the team combinations
-//      for (int x = 0; x < numberOfTeams; x++) {
-//        team1 = teams[x];
-//        for (int y = 0; y < x; y++) {
-//          team2 = teams[y];
-        // add the edge from 'start' to 'game x-y' with the capacity of the games left between them
-        // add an edge from 'game x-y' to 'x' and to 'y'
-        // increment game for the next iteration
-//          game++;
-//        }
-        // add an edge from team1 to the 'end' and give it the capacity of the wins that the
-        // query team could afford  winning without overtaking our query team,
-        // i.e. the query teams max possible wins minus team1's current wins
+        // iterate over all of the team combinations
+        for (int x = 0; x < NUM_OF_TEAMS; x++) {
 
-//      }
-//      return flowNetwork;
+            String team1 = teams[x];
+            for (int y = 0; y < x; y++) {
+                String team2 = teams[y];
+                FlowEdge edge = new FlowEdge(start, game, division.get(team2)[GAMES_LEFT + division.get(team1)[TEAM_NUMBER_POSITION]]);
+                flowNetwork.addEdge(edge);
+                FlowEdge edgex = new FlowEdge(game,)
+                // add the edge from 'start' to 'game x-y' with the capacity of the games left between them
+                // add an edge from 'game x-y' to 'x' and to 'y'
+                // increment game for the next iteration
+                 game++;
+            }
+            // add an edge from team1 to the 'end' and give it the capacity of the wins that the
+            // query team could afford  winning without overtaking our query team,
+            // i.e. the query teams max possible wins minus team1's current wins
+
+        }
+        return flowNetwork;
+    }
+    private int getNumofMatchups(String qteam)
+    {
+        int ret = 0;
+        for (int i = 0; i<NUM_OF_TEAMS;i++)
+        {
+            if(teams[i].equals(qteam)) continue;
+            for (int x = i+1;x<NUM_OF_TEAMS;x++)
+            {
+                if(teams[x].equals(qteam)) continue;
+                ret++;
+            }
+        }
+        return ret;
     }
 
     // subset R of teams that eliminates given team; null if not eliminated

@@ -146,7 +146,7 @@ public class BaseballEliminationTest {
    */
   @Test
   public void testCertificateOfEliminationNonTriviallyEliminatedTeams4() {
-    List<String> teams4ExpectedList = Arrays.asList("Atlanta", "New York");
+    List<String> teams4ExpectedList = Arrays.asList("Atlanta", "New_York");
     
     for (String actualEliminationTeam: 
       baseballEliminationTeams4.certificateOfElimination("Philadelphia")) {
