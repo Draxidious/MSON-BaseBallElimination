@@ -42,7 +42,7 @@ public class BaseballElimination {
 
     // number of teams
     public int numberOfTeams() {
-        return 0;
+        return NUM_OF_TEAMS;
     }
 
     // all teams
@@ -52,22 +52,22 @@ public class BaseballElimination {
 
     // number of wins for given team
     public int wins(String team) {
-        return 0;
+        return division.get(team)[WINS_POSITION];
     }
 
     // number of losses for given team
     public int losses(String team) {
-        return 0;
+        return division.get(team)[LOSS_POSITION];
     }
 
     // number of remaining games for given team
     public int remaining(String team) {
-        return 0;
+        return division.get(team)[GAMES_LEFT];
     }
 
     // number of remaining games between team1 and team2
     public int against(String team1, String team2) {
-        return 0;
+        return division.get(team1)[GAMES_LEFT + division.get(team2)[TEAM_NUMBER_POSITION]];
     }
 
     // is given team eliminated?
@@ -92,13 +92,17 @@ public class BaseballElimination {
             String team1 = teams[x];
             for (int y = 0; y < x; y++) {
                 String team2 = teams[y];
-                FlowEdge edge = new FlowEdge(start, game, division.get(team2)[GAMES_LEFT + division.get(team1)[TEAM_NUMBER_POSITION]]);
+                FlowEdge edge = new FlowEdge(start, game,
+                        division.get(team2)[GAMES_LEFT + division.get(team1)[TEAM_NUMBER_POSITION]]);
                 flowNetwork.addEdge(edge);
-                FlowEdge edgex = new FlowEdge(game,)
-                // add the edge from 'start' to 'game x-y' with the capacity of the games left between them
-                // add an edge from 'game x-y' to 'x' and to 'y'
-                // increment game for the next iteration
-                 game++;
+                FlowEdge edgex = new FlowEdge(game, numOfMatchups + 1 + division.get(team1)[TEAM_NUMBER_POSITION],
+                        Integer.MAX_VALUE);
+                flowNetwork.addEdge(edgex);
+                FlowEdge edgey = new FlowEdge(game, numOfMatchups + 1 + division.get(team2)[TEAM_NUMBER_POSITION],
+                        Integer.MAX_VALUE);
+                flowNetwork.addEdge(edgey);
+
+                game++;
             }
             // add an edge from team1 to the 'end' and give it the capacity of the wins that the
             // query team could afford  winning without overtaking our query team,
@@ -107,15 +111,13 @@ public class BaseballElimination {
         }
         return flowNetwork;
     }
-    private int getNumofMatchups(String qteam)
-    {
+
+    private int getNumofMatchups(String qteam) {
         int ret = 0;
-        for (int i = 0; i<NUM_OF_TEAMS;i++)
-        {
-            if(teams[i].equals(qteam)) continue;
-            for (int x = i+1;x<NUM_OF_TEAMS;x++)
-            {
-                if(teams[x].equals(qteam)) continue;
+        for (int i = 0; i < NUM_OF_TEAMS; i++) {
+            if (teams[i].equals(qteam)) continue;
+            for (int x = i + 1; x < NUM_OF_TEAMS; x++) {
+                if (teams[x].equals(qteam)) continue;
                 ret++;
             }
         }
