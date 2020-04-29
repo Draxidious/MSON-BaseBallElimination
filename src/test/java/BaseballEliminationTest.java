@@ -2,6 +2,7 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Before;
@@ -43,9 +44,7 @@ public class BaseballEliminationTest {
   public void testTeams() {
     String[] teams4Expected = {"Atlanta", "Philadelphia", "New_York", "Montreal"};
     ArrayList<String> teams4ExpectedList = new ArrayList<String>();
-    for (String team: teams4Expected) {
-      teams4ExpectedList.add(team);
-    }
+    Collections.addAll(teams4ExpectedList, teams4Expected);
     for (String actualTeam: baseballEliminationTeams4.teams()) {
       assertTrue(actualTeam + " is not in the expected list",teams4ExpectedList.contains(actualTeam));
     }

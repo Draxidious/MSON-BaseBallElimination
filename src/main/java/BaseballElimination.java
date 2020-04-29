@@ -4,7 +4,6 @@ import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -14,7 +13,7 @@ public class BaseballElimination {
     private final int WINS_POSITION = 1;
     private final int LOSS_POSITION = 2;
     private final int GAMES_LEFT = 3;
-    String[] teams;
+    private String[] teams;
     private int NUM_OF_TEAMS;
     private int numOfMatchups;
 
@@ -70,7 +69,7 @@ public class BaseballElimination {
 
     // number of remaining games between team1 and team2
     public int against(String team1, String team2) {
-        return division.get(team1)[GAMES_LEFT + division.get(team2)[TEAM_NUMBER_POSITION]];
+        return division.get(team1)[GAMES_LEFT + 1 + division.get(team2)[TEAM_NUMBER_POSITION]];
     }
 
     // is given team eliminated?
@@ -89,12 +88,12 @@ public class BaseballElimination {
         // # of vertices in your FlowNetwork is the numberOfMatchups + numberofTeams + 2
         int game = 1;
         numOfMatchups = getNumofMatchups(qteam);
-        int[] qarr = division.get(qteam);
-        int vertices = qarr[GAMES_LEFT] + NUM_OF_TEAMS + 2;
+
+        int vertices = remaining(qteam) + NUM_OF_TEAMS + 2;
         FlowNetwork flowNetwork = new FlowNetwork(vertices);
 
         // calculate the maximum wins possible for the team passed to this method
-        int maxwins = qarr[WINS_POSITION] + qarr[GAMES_LEFT];
+        int maxwins = wins(qteam) + remaining(qteam);
         int start = 0;
 
         // iterate over all of the team combinations
@@ -103,8 +102,7 @@ public class BaseballElimination {
             String team1 = teams[x];
             for (int y = 0; y < x; y++) {
                 String team2 = teams[y];
-                FlowEdge edge = new FlowEdge(start, game,
-                        division.get(team2)[GAMES_LEFT + division.get(team1)[TEAM_NUMBER_POSITION]]);
+                FlowEdge edge = new FlowEdge(start, game, against(team1, team2));
                 flowNetwork.addEdge(edge);
                 FlowEdge edgex = new FlowEdge(game, numOfMatchups + 1 + division.get(team1)[TEAM_NUMBER_POSITION],
                         Integer.MAX_VALUE);
@@ -116,7 +114,7 @@ public class BaseballElimination {
                 game++;
             }
             FlowEdge edgefin = new FlowEdge(numOfMatchups + 1 + division.get(team1)[TEAM_NUMBER_POSITION],
-                    vertices - 1, maxwins - division.get(team1)[WINS_POSITION]);
+                    vertices - 1, maxwins - wins(team1));
             flowNetwork.addEdge(edgefin);
             // add an edge from team1 to the 'end' and give it the capacity of the wins that the
             // query team could afford  winning without overtaking our query team,
