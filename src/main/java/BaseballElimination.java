@@ -73,8 +73,8 @@ public class BaseballElimination {
     public boolean isEliminated(String team) {
         FlowNetwork network = getFlowNetwork(team);
         FordFulkerson ford = new FordFulkerson(network, 0, network.V() - 1);
-        if (ford.inCut(0)) return true;
-        return false;
+        if (ford.inCut(0)) return false;
+        return true;
     }
 
     private FlowNetwork getFlowNetwork(String qteam) {
@@ -82,20 +82,20 @@ public class BaseballElimination {
         int game = 1;
         numOfMatchups = getNumofMatchups(qteam);
 
-        int vertices = remaining(qteam) + NUM_OF_TEAMS + 2;
+        int vertices = numOfMatchups + NUM_OF_TEAMS + 2;
         FlowNetwork flowNetwork = new FlowNetwork(vertices);
 
         // calculate the maximum wins possible for the team passed to this method
-        int maxwins = wins(qteam) + remaining(qteam);
+        int maxwins = division.get(qteam)[WINS_POSITION] + division.get(qteam)[GAMES_LEFT];
         int start = 0;
 
         // iterate over all of the team combinations
         for (int x = 0; x < NUM_OF_TEAMS; x++) {
-
             String team1 = teams[x];
             for (int y = 0; y < x; y++) {
                 String team2 = teams[y];
-                FlowEdge edge = new FlowEdge(start, game, against(team1, team2));
+                FlowEdge edge = new FlowEdge(start, game,
+                        division.get(team1)[GAMES_LEFT + 1 + division.get(team2)[TEAM_NUMBER_POSITION]]);
                 flowNetwork.addEdge(edge);
                 FlowEdge edgex = new FlowEdge(game, numOfMatchups + 1 + division.get(team1)[TEAM_NUMBER_POSITION],
                         Integer.MAX_VALUE);
@@ -107,7 +107,7 @@ public class BaseballElimination {
                 game++;
             }
             FlowEdge edgefin = new FlowEdge(numOfMatchups + 1 + division.get(team1)[TEAM_NUMBER_POSITION],
-                    vertices - 1, maxwins - wins(team1));
+                    vertices - 1, maxwins - division.get(team1)[WINS_POSITION]);
             flowNetwork.addEdge(edgefin);
             // add an edge from team1 to the 'end' and give it the capacity of the wins that the
             // query team could afford  winning without overtaking our query team,

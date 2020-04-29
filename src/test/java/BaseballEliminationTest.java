@@ -116,7 +116,7 @@ public class BaseballEliminationTest {
   @Test
   public void testIsEliminatedTeams4() {
     assertFalse(baseballEliminationTeams4.isEliminated("Atlanta"));
-    assertTrue(baseballEliminationTeams4.isEliminated("Philadelphia"));
+      assertTrue(baseballEliminationTeams4.isEliminated("Philadelphia"));
     assertFalse(baseballEliminationTeams4.isEliminated("New_York"));
     assertTrue(baseballEliminationTeams4.isEliminated("Montreal"));
   }
