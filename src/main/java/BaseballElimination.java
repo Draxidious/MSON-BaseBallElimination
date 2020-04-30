@@ -2,7 +2,6 @@ import edu.princeton.cs.algs4.*;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.Iterator;
 
 public class BaseballElimination {
     private HashMap<String, int[]> division;
@@ -17,6 +16,7 @@ public class BaseballElimination {
 
     // create a baseball division from given filename in format specified below
     public BaseballElimination(String filename) {
+
         // read in the file and set up the division
         // utilize split("\\s+") and Integer.parseInt
         In file = new In(new File(filename));
@@ -71,17 +71,21 @@ public class BaseballElimination {
 
     // is given team eliminated?
     public boolean isEliminated(String team) {
+        if (isTriviallyEliminated(team)) return true;
         FlowNetwork network = getFlowNetwork(team);
-        FordFulkerson ford = new FordFulkerson(network, 0, network.V() - 1);
-        if (ford.inCut(0)) return false;
-        return true;
+
+        new FordFulkerson(network, 0, network.V() - 1);
+        System.out.println(network.toString());
+        for (FlowEdge edge : network.adj(0)) {
+            if (edge.flow() != edge.capacity()) return true;
+        }
+        return false;
     }
 
     private FlowNetwork getFlowNetwork(String qteam) {
         // # of vertices in your FlowNetwork is the numberOfMatchups + numberofTeams + 2
         int game = 1;
         numOfMatchups = getNumofMatchups(qteam);
-
         int vertices = numOfMatchups + NUM_OF_TEAMS + 2;
         FlowNetwork flowNetwork = new FlowNetwork(vertices);
 
@@ -97,17 +101,16 @@ public class BaseballElimination {
                 FlowEdge edge = new FlowEdge(start, game,
                         division.get(team1)[GAMES_LEFT + 1 + division.get(team2)[TEAM_NUMBER_POSITION]]);
                 flowNetwork.addEdge(edge);
-                FlowEdge edgex = new FlowEdge(game, numOfMatchups + 1 + division.get(team1)[TEAM_NUMBER_POSITION],
+                FlowEdge edgex = new FlowEdge(game, numOfMatchups + 1 + x,
                         Integer.MAX_VALUE);
                 flowNetwork.addEdge(edgex);
                 FlowEdge edgey = new FlowEdge(game, numOfMatchups + 1 + division.get(team2)[TEAM_NUMBER_POSITION],
                         Integer.MAX_VALUE);
                 flowNetwork.addEdge(edgey);
-
                 game++;
             }
             FlowEdge edgefin = new FlowEdge(numOfMatchups + 1 + division.get(team1)[TEAM_NUMBER_POSITION],
-                    vertices - 1, maxwins - division.get(team1)[WINS_POSITION]);
+                    vertices - 1, Math.max(0, maxwins - division.get(team1)[WINS_POSITION]));
             flowNetwork.addEdge(edgefin);
             // add an edge from team1 to the 'end' and give it the capacity of the wins that the
             // query team could afford  winning without overtaking our query team,
@@ -117,20 +120,29 @@ public class BaseballElimination {
         return flowNetwork;
     }
 
+    private boolean isTriviallyEliminated(String team) {
+        // is the team trivially eliminated
+        // if number of games left played is possible for them to become division leader
+        // if so return true
+        // The division leader would be the team returned by certificate of elimination
+
+        return false;
+
+    }
+
     private int getNumofMatchups(String qteam) {
-        int ret = 0;
-        for (int i = 0; i < NUM_OF_TEAMS; i++) {
-            if (teams[i].equals(qteam)) continue;
-            for (int x = i + 1; x < NUM_OF_TEAMS; x++) {
-                if (teams[x].equals(qteam)) continue;
-                ret++;
-            }
-        }
-        return ret;
+        return ((NUM_OF_TEAMS - 1) * NUM_OF_TEAMS) / 2;
     }
 
     // subset R of teams that eliminates given team; null if not eliminated
     public Iterable<String> certificateOfElimination(String team) {
+        // if trivially eliminated
+        // add the division leader
+        FlowNetwork flowNetwork = getFlowNetwork(team);
+        FordFulkerson fordFulkerson = new FordFulkerson(flowNetwork, 0, flowNetwork.V() - 1);
+        // loop through all the teams
+        // if it's in the incut of the fordFulkerson
+        // add to the list
         return null;
     }
 
