@@ -54,26 +54,32 @@ public class BaseballElimination {
 
     // number of wins for given team
     public int wins(String team) {
+        if (team == null || !division.containsKey(team)) throw new IllegalArgumentException();
         return division.get(team)[WINS_POSITION];
     }
 
     // number of losses for given team
     public int losses(String team) {
+        if (team == null || !division.containsKey(team)) throw new IllegalArgumentException();
         return division.get(team)[LOSS_POSITION];
     }
 
     // number of remaining games for given team
     public int remaining(String team) {
+        if (team == null || !division.containsKey(team)) throw new IllegalArgumentException();
         return division.get(team)[GAMES_LEFT];
     }
 
     // number of remaining games between team1 and team2
     public int against(String team1, String team2) {
+        if (team1 == null || !division.containsKey(team1)) throw new IllegalArgumentException();
+        if (team2 == null || !division.containsKey(team2)) throw new IllegalArgumentException();
         return division.get(team1)[GAMES_LEFT + 1 + division.get(team2)[TEAM_NUMBER_POSITION]];
     }
 
     // is given team eliminated?
     public boolean isEliminated(String team) {
+        if (team == null || !division.containsKey(team)) throw new IllegalArgumentException();
         if (isTriviallyEliminated(team)) return true;
         FlowNetwork network = getFlowNetwork(team);
         new FordFulkerson(network, 0, network.V() - 1);
@@ -141,6 +147,7 @@ public class BaseballElimination {
 
     // subset R of teams that eliminates given team; null if not eliminated
     public Iterable<String> certificateOfElimination(String team) {
+        if (team == null || !division.containsKey(team)) throw new IllegalArgumentException();
         ArrayList<String> ret = new ArrayList<>();
         if (isTriviallyEliminated(team)) {
             ret.add(divleader);
