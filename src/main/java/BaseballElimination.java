@@ -12,6 +12,7 @@ public class BaseballElimination {
     private String[] teams;
     private int NUM_OF_TEAMS;
     private int numOfMatchups;
+    private String divleader;
 
 
     // create a baseball division from given filename in format specified below
@@ -73,9 +74,7 @@ public class BaseballElimination {
     public boolean isEliminated(String team) {
         if (isTriviallyEliminated(team)) return true;
         FlowNetwork network = getFlowNetwork(team);
-
         new FordFulkerson(network, 0, network.V() - 1);
-        System.out.println(network.toString());
         for (FlowEdge edge : network.adj(0)) {
             if (edge.flow() != edge.capacity()) return true;
         }
@@ -85,7 +84,7 @@ public class BaseballElimination {
     private FlowNetwork getFlowNetwork(String qteam) {
         // # of vertices in your FlowNetwork is the numberOfMatchups + numberofTeams + 2
         int game = 1;
-        numOfMatchups = getNumofMatchups(qteam);
+        numOfMatchups = getNumofMatchups();
         int vertices = numOfMatchups + NUM_OF_TEAMS + 2;
         FlowNetwork flowNetwork = new FlowNetwork(vertices);
 
@@ -121,16 +120,16 @@ public class BaseballElimination {
     }
 
     private boolean isTriviallyEliminated(String team) {
-        // is the team trivially eliminated
-        // if number of games left played is possible for them to become division leader
-        // if so return true
-        // The division leader would be the team returned by certificate of elimination
-
-        return false;
+        int teamscore = division.get(team)[WINS_POSITION] + division.get(team)[GAMES_LEFT];
+        int maxscore = 0;
+        for (int i = 0; i < NUM_OF_TEAMS; i++) {
+            maxscore = Math.max(maxscore, division.get(teams[i])[WINS_POSITION]);
+        }
+        return teamscore < maxscore;
 
     }
 
-    private int getNumofMatchups(String qteam) {
+    private int getNumofMatchups() {
         return ((NUM_OF_TEAMS - 1) * NUM_OF_TEAMS) / 2;
     }
 
