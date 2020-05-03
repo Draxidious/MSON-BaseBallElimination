@@ -7,15 +7,45 @@ import edu.princeton.cs.algs4.StdOut;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * Baseball elimination class.
+ */
 public class BaseballElimination {
+    /**
+     * Hashmap to access information about each team in division.
+     */
     private HashMap<String, int[]> division;
+    /**
+     * Team number position in array in Hashmap.
+     */
     private final int TEAM_NUMBER_POSITION = 0;
+    /**
+     * Win number position in array in Hashmap.
+     */
     private final int WINS_POSITION = 1;
+    /**
+     * Loss number position in array in Hashmap.
+     */
     private final int LOSS_POSITION = 2;
+    /**
+     * GamesLeft number position in array in Hashmap.
+     */
     private final int GAMES_LEFT = 3;
+    /**
+     * String array of teams for easy access.
+     */
     private String[] teams;
+    /**
+     * Number of teams in division.
+     */
     private int NUM_OF_TEAMS;
+    /**
+     * Number of matchups in division.
+     */
     private int numOfMatchups;
+    /**
+     * Division leader.
+     */
     private String divleader;
 
 
