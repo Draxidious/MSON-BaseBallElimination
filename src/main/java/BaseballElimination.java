@@ -1,6 +1,7 @@
 import edu.princeton.cs.algs4.*;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class BaseballElimination {
@@ -27,7 +28,8 @@ public class BaseballElimination {
         teams = new String[NUM_OF_TEAMS];
         file.readLine();
         for (int i = 0; i < numofteams; i++) {
-            String[] next = file.readLine().split("\\s+");
+            String line = file.readLine().trim();
+            String[] next = line.split("\\s+");
             String teamname = next[0];
             int[] putarr = new int[numofteams + 4];
             putarr[TEAM_NUMBER_POSITION] = i;
@@ -123,7 +125,11 @@ public class BaseballElimination {
         int teamscore = division.get(team)[WINS_POSITION] + division.get(team)[GAMES_LEFT];
         int maxscore = 0;
         for (int i = 0; i < NUM_OF_TEAMS; i++) {
-            maxscore = Math.max(maxscore, division.get(teams[i])[WINS_POSITION]);
+            int cur = division.get(teams[i])[WINS_POSITION];
+            if (cur > maxscore) {
+                maxscore = cur;
+                divleader = teams[i];
+            }
         }
         return teamscore < maxscore;
 
@@ -135,14 +141,17 @@ public class BaseballElimination {
 
     // subset R of teams that eliminates given team; null if not eliminated
     public Iterable<String> certificateOfElimination(String team) {
-        // if trivially eliminated
-        // add the division leader
+        ArrayList<String> ret = new ArrayList<>();
+        if (isTriviallyEliminated(team)) {
+            ret.add(divleader);
+            return ret;
+        }
         FlowNetwork flowNetwork = getFlowNetwork(team);
         FordFulkerson fordFulkerson = new FordFulkerson(flowNetwork, 0, flowNetwork.V() - 1);
-        // loop through all the teams
-        // if it's in the incut of the fordFulkerson
-        // add to the list
-        return null;
+        for (int i = 0; i < NUM_OF_TEAMS; i++) {
+            if (fordFulkerson.inCut(division.get(teams[i])[TEAM_NUMBER_POSITION])) ret.add(teams[i]);
+        }
+        return ret;
     }
 
     /**
