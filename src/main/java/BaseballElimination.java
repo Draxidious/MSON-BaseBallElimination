@@ -4,7 +4,6 @@ import edu.princeton.cs.algs4.FordFulkerson;
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -25,7 +24,7 @@ public class BaseballElimination {
 
         // read in the file and set up the division
         // utilize split("\\s+") and Integer.parseInt
-        In file = new In(new File(filename));
+        In file = new In(filename);
         division = new HashMap<>();
         int numofteams = file.readInt();
         NUM_OF_TEAMS = numofteams;
