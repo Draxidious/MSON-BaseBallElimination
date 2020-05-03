@@ -156,11 +156,11 @@ public class BaseballElimination {
             ret.add(divleader);
             return ret;
         }
-        if (!isEliminated(team)) return null;
+        if (!isEliminated(team))  return null;
         FlowNetwork flowNetwork = getFlowNetwork(team);
         FordFulkerson fordFulkerson = new FordFulkerson(flowNetwork, 0, flowNetwork.V() - 1);
         for (int i = 0; i < NUM_OF_TEAMS; i++) {
-            if (fordFulkerson.inCut(division.get(teams[i])[TEAM_NUMBER_POSITION])) ret.add(teams[i]);
+            if (fordFulkerson.inCut(numOfMatchups + 1 + division.get(teams[i])[TEAM_NUMBER_POSITION])) ret.add(teams[i]);
         }
         return ret;
     }

@@ -15,6 +15,7 @@ import org.junit.Test;
 public class BaseballEliminationTest {
 
   BaseballElimination baseballEliminationTeams4;
+  BaseballElimination baseballEliminationTeams4a;
   BaseballElimination baseballEliminationTeams5;
 
   /**
@@ -23,6 +24,7 @@ public class BaseballEliminationTest {
   @Before
   public void setUp() throws Exception {
     baseballEliminationTeams4 = new BaseballElimination("baseball-testing-files/teams4.txt");
+    baseballEliminationTeams4a = new BaseballElimination("baseball-testing-files/teams4a.txt");
     baseballEliminationTeams5 = new BaseballElimination("baseball-testing-files/teams5.txt");
   }
 
@@ -107,6 +109,7 @@ public class BaseballEliminationTest {
     }
   }
 
+
   //TODO Write testAgainst for teams5.txt and one other input file
 
 
@@ -155,6 +158,13 @@ public class BaseballEliminationTest {
 
   }
 
+  @Test
+  public void testCertificateOfEliminationNonTriviallyEliminatedTeams4a() {
+    List<String> teams4ExpectedList = Arrays.asList("CIA", "Obama");
+    System.out.println(baseballEliminationTeams4a.certificateOfElimination("Ghaddafi"));
+
+
+  }
   //TODO Write testCertificateOfElimination for teams5.txt and one other input file
 
 }
